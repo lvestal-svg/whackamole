@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Whack-A-Mole Timer</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: skyblue;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    #screen {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    #display {
+      font-size: 14vw;
+      font-weight: bold;
+      color: brown;
+      padding: 30px;
+      transition: all 0.2s;
+    }
+
+    button {
+      font-size: 32px;
+      padding: 18px 35px;
+      margin: 12px;
+      border: none;
+      border-radius: 15px;
+      background: green;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: darkgreen;
+    }
+
+    /* MAIN COUNTDOWN STYLE */
+    .counting #display {
+      font-size: 40vw;
+      color: green;
+    }
+
+    .counting button {
+      display: none;
+    }
+
+    /* FINAL 3 SECONDS WARNING */
+    .warning {
+      color: yellow !important;
+      background: red;
+      animation: flash 0.5s infinite;
+      width: 100vw;
+    }
+
+    @keyframes flash {
+      0% {
+        background: red;
+        color: yellow;
+        transform: scale(1);
+      }
+
+      50% {
+        background: yellow;
+        color: red;
+        transform: scale(1.08);
+      }
+
+      100% {
+        background: red;
+        color: yellow;
+        transform: scale(1);
+      }
+    }
+
+    /* FUNNY SAYING SCREEN */
+    .finished #display {
+      font-size: 9vw;
+      color: brown;
+      max-width: 90vw;
+      line-height: 1.1;
+    }
+
+    .finished button {
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="screen">
+
+    <div id="display">Ready?</div>
+
+    <div id="buttons">
+      <button onclick="startGame()">Start</button>
+      <button onclick="resetGame()">Stop / Reset</button>
+    </div>
+
+  </div>
+
+  <script>
+    let timer;
+    let preTimer;
+    let timeLeft = 15;
+    let running = false;
+
+    const display = document.getElementById("display");
+
+    const sayings = [
+      "That mole definitely saw stars!",
+      "Whack-tastic work!",
+      "Mole control has been notified!",
+      "You showed those moles who’s boss!",
+      "No mole is safe today!",
+      "That was a hole lot of fun!",
+      "The moles are filing a complaint!",
+      "Whack now, brag later!",
+      "You really nailed it!",
+      "Mole patrol complete!",
+      "The backyard is safe again!",
+      "That mole needs a vacation!",
+      "Game over, mole over!"
+    ];
+
+    function startGame() {
+
+      if (running) return;
+
+      running = true;
+
+      clearInterval(timer);
+      clearInterval(preTimer);
+
+      display.classList.remove("warning");
+      document.body.className = "";
+
+      let preCount = 3;
+
+      display.textContent = preCount;
+
+      preTimer = setInterval(() => {
+
+        preCount--;
+
+        if (preCount > 0) {
+
+          display.textContent = preCount;
+
+        } else if (preCount === 0) {
+
+          display.textContent = "GO!";
+
+        } else {
+
+          clearInterval(preTimer);
+          startMainTimer();
+
+        }
+
+      }, 1000);
+    }
+
+    function startMainTimer() {
+
+      document.body.className = "counting";
+
+      timeLeft = 15;
+
+      display.classList.remove("warning");
+
+      // SHOW 15 FIRST
+      display.textContent = timeLeft;
+
+      timer = setInterval(() => {
+
+        timeLeft--;
+
+        display.textContent = timeLeft;
+
+        // LAST 3 SECONDS
+        if (timeLeft <= 3 && timeLeft > 0) {
+          display.classList.add("warning");
+        }
+
+        // END TIMER
+        if (timeLeft <= 0) {
+
+          clearInterval(timer);
+
+          running = false;
+
+          display.classList.remove("warning");
+
+          const randomSaying =
+            sayings[Math.floor(Math.random() * sayings.length)];
+
+          // KEEP 0 ON SCREEN FOR 1 FULL SECOND
+          setTimeout(() => {
+
+            document.body.className = "finished";
+
+            display.textContent = randomSaying;
+
+          }, 1000);
+
+        }
+
+      }, 1000);
+    }
+
+    function resetGame() {
+
+      clearInterval(timer);
+      clearInterval(preTimer);
+
+      running = false;
+
+      timeLeft = 15;
+
+      display.classList.remove("warning");
+
+      document.body.className = "";
+
+      display.textContent = "Ready?";
+    }
+  </script>
+
+</body>
+</html>
